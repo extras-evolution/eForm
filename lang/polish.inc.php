@@ -2,7 +2,6 @@
 /**
 * snippets/eform/english.inc.php
 * English language file for eForm
-* local revision: $Id: english.inc.php,v 1.2 2006/11/22 14:47:54 jelle Exp $
 */
 
 
@@ -33,7 +32,4 @@ $_lang['ef_mail_abuse_subject'] = 'Potential email form abuse detected for form 
 $_lang['ef_mail_abuse_message'] = '<p>A form on your website may have been the subject of an email injection attempt. The details of the posted values are printed below. Suspected text has been embedded in \[..]\ tags.  </p>';
 $_lang['ef_mail_abuse_error'] = '<strong>Invalid or insecure entries were detected in your form</strong>.';
 $_lang['ef_eval_deprecated'] = "The #EVAL rule is deprecated and may not work in future versions. Use #FUNCTION instead.";
-$_lang['ef_multiple_submit'] = "<p>This form was already submitted succesfully. There is no need to submit your information multiple times.</p>";
-$_lang['ef_submit_time_limit'] = "<p>This form was already submitted succesfully. Re-submission of the form is disabled for ".($submitLimit/60)." minutes.</p>";
-$_lang['ef_version_error'] = "<strong>WARNING!</strong> The version of the eForm snippet (version:&nbsp;$version) is different from the included eForm file (version:&nbsp;$fileVersion). Please make sure you use the same version for both.";
 ?>
