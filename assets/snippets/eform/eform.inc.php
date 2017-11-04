@@ -169,7 +169,6 @@ function eForm($modx,$params) {
 			if(is_array($value)){ // type="checkbox" etc. remove empty values
 				$value = array_filter($value,create_function('$v','return (!empty($v));'));
 			} else {
-				if(get_magic_quotes_gpc())                    $value = stripslashes($value); // For before PHP 5.3
 				if(!$allowhtml || $formats[$name][2]!='html') $value = strip_tags($value);
 			}
 			$fields[$name] = $value;
@@ -380,7 +379,7 @@ function eForm($modx,$params) {
 					$body .="</table>";
 					$modx->loadExtension('MODxMailer');
 				// send abuse alert
-					$modx->mail->IsHTML($isHtml);
+					$modx->mail->IsHTML(1);
 					$modx->mail->From		= $modx->config['emailsender'];
 					$modx->mail->FromName	= $modx->config['site_name'];
 					$modx->mail->Subject	= $_lang['ef_mail_abuse_subject'];
