@@ -661,6 +661,9 @@ function eForm($modx,$params) {
 // Form Merge
 function formMerge($docText, $docFields) {
 	global $modx, $formats, $lastitems;
+	if (!isset($lastitems) || !is_array($lastitems)) {
+		$lastitems = array();
+	}
 	if(!$docText) return '';
 
 	preg_match_all('~\[\+(.*?)\+\]~', $docText, $matches);
