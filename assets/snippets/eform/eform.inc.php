@@ -938,6 +938,7 @@ function buildTagPlaceholder($tag,$attributes,$name){
 	$quotedValue = $attributes['value'];
 	$val = stripTagQuotes($quotedValue);
 
+    $t = "";
 	foreach ($attributes as $k => $v)
 			$t .= ($k!='value' && $k!='checked' && $k!='selected')?" $k=$v":"";
 
