@@ -171,9 +171,9 @@ function eForm($modx,$params) {
 			$fields[$name] = $value;
 		}
 		
-		modx_sanitize_gpc($fields); // Remove the danger values that the result of stripslashes and strip_tags.
-		
-		// get uploaded files
+        $modx->sanitize_gpc($fields); // Remove the danger values that the result of stripslashes and strip_tags.
+
+        // get uploaded files
 		foreach($_FILES as $name => $value){
 			$fields[$name] = $value;
 		}
