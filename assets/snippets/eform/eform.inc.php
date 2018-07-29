@@ -48,10 +48,7 @@ function eForm($modx,$params) {
 	global $formats,$fields,$efPostBack;
 
 	$fields = array(); //reset fields array - needed in case of multiple forms
-
-    // define some variables used as array index
-    $_dfnMaxlength = 6;
-
+	
 	extract($params,EXTR_SKIP); // extract params into variables
 
 	$fileVersion = '1.4.8';
@@ -750,6 +747,9 @@ function AttachFilesToMailer(&$mail,&$attachFiles) {
 function  eFormParseTemplate($tpl, $isDebug=false ){
 	global $modx,$formats,$optionsName,$_lang,$debugText,$fields,$validFormId;
 	global $efPostBack;
+	
+	// define some variables used as array index
+	$_dfnMaxlength = 6;
 
 	$formats = array();  //clear formats so values don't persist through multiple snippet calls
 	$labels = array();
@@ -876,7 +876,7 @@ function  eFormParseTemplate($tpl, $isDebug=false ){
                     // add support for maxlength attribute for textarea
                     // attribute get's stripped form form //
                     if ($tagAttributes['maxlength']) {
-                        $formats[$name][$_dfnMaxlength] == $tagAttributes['maxlength'];
+                        $formats[$name][$_dfnMaxlength] = $tagAttributes['maxlength'];
                         unset($tagAttributes['maxlength']);
                     }
                     $newTag = buildTagPlaceholder($type, $tagAttributes, $name);
@@ -893,7 +893,7 @@ function  eFormParseTemplate($tpl, $isDebug=false ){
                     $fieldType = stripTagQuotes($tagAttributes['type']);
                     //validate on maxlength...
                     if ($fieldType == 'text' && $tagAttributes['maxlength']) {
-                        $formats[$name][$_dfnMaxlength] == $tagAttributes['maxlength'];
+                        $formats[$name][$_dfnMaxlength] = $tagAttributes['maxlength'];
                     }
                     if ($formats[$name] && !$formats[$name][2]) {
                         $formats[$name][2] = ($fieldType == 'text') ? "string" : $fieldType;
