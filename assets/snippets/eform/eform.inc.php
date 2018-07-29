@@ -883,7 +883,7 @@ function  eFormParseTemplate($tpl, $isDebug=false ){
                     // add support for maxlength attribute for textarea
                     // attribute get's stripped form form //
                     if (isset($tagAttributes['maxlength'])) {
-                        $formats[$name][$_dfnMaxlength] == $tagAttributes['maxlength'];
+                        $formats[$name][$_dfnMaxlength] = $tagAttributes['maxlength'];
                         unset($tagAttributes['maxlength']);
                     }
                     $newTag = buildTagPlaceholder($type, $tagAttributes, $name);
@@ -900,7 +900,7 @@ function  eFormParseTemplate($tpl, $isDebug=false ){
                     $fieldType = stripTagQuotes($tagAttributes['type']);
                     //validate on maxlength...
                     if ($fieldType == 'text' && isset($tagAttributes['maxlength'])) {
-                        $formats[$name][$_dfnMaxlength] == $tagAttributes['maxlength'];
+                        $formats[$name][$_dfnMaxlength] = $tagAttributes['maxlength'];
                     }
                     if ($formats[$name] && !$formats[$name][2]) {
                         $formats[$name][2] = ($fieldType == 'text') ? "string" : $fieldType;
