@@ -48,10 +48,7 @@ function eForm($modx,$params) {
 	global $formats,$fields,$efPostBack;
 
 	$fields = array(); //reset fields array - needed in case of multiple forms
-
-    // define some variables used as array index
-    $_dfnMaxlength = 6;
-
+	
 	extract($params,EXTR_SKIP); // extract params into variables
 
 	$fileVersion = '1.4.8';
@@ -102,7 +99,7 @@ function eForm($modx,$params) {
 			$tpl = str_replace('</form>',"<input type=\"hidden\" name=\"formid\" value=\"$form_id\" /></form>",$tpl);
 	}
 
-	$validFormId = ($formid==$_POST['formid'])?1:0;
+    $validFormId = ( isset($_POST['formid']) && $formid == $_POST['formid']) ? 1 : 0;
 
 	// check if postback mode
 	$efPostBack = ($validFormId && count($_POST)>0)? true:false; //retain old variable?
@@ -174,9 +171,9 @@ function eForm($modx,$params) {
 			$fields[$name] = $value;
 		}
 		
-		modx_sanitize_gpc($fields); // Remove the danger values that the result of stripslashes and strip_tags.
-		
-		// get uploaded files
+        $modx->sanitize_gpc($fields); // Remove the danger values that the result of stripslashes and strip_tags.
+
+        // get uploaded files
 		foreach($_FILES as $name => $value){
 			$fields[$name] = $value;
 		}
@@ -193,9 +190,11 @@ function eForm($modx,$params) {
 		
 		// validate fields
 		foreach($fields as $name => $value) {
-			$fld = $formats[$name];
-			if ($fld) {
-				$desc		= $fld[1];
+            if(isset($formats[$name])){
+                $fld = $formats[$name];
+            }
+            if (isset($fld)) {
+                $desc		= $fld[1];
 				$datatype 	= $fld[2];
 				$isRequired = $fld[3];
 
@@ -319,6 +318,9 @@ function eForm($modx,$params) {
 			if (!strstr($tpl, '[+validationmessage+]')) {
 				$modx->setPlaceholder('validationmessage', str_replace('[+ef_wrapper+]', implode('<br/>', $vMsg), $validationMessage));
 			} else {
+                if (!isset($fields['validationmessage'])) {
+                    $fields['validationmessage'] = '';
+                }
 				$fields['validationmessage'] .= str_replace('[+ef_wrapper+]', implode('<br/>', $vMsg), $validationMessage);
 			}
 		} else {
@@ -669,8 +671,10 @@ function formMerge($docText, $docFields) {
 	preg_match_all('~\[\+(.*?)\+\]~', $docText, $matches);
 	for($i=0;$i<count($matches[1]);$i++) {
 		$name = $matches[1][$i];
-		list($listName,$listValue) = explode(":",$name);
-		$value = isset($docFields[$listName])? $docFields[$listName]:'';
+        $list = explode(":", $name);
+        $listName = $list[0];
+        $listValue = (isset($list[1])) ? $list[1] : "";
+        $value = isset($docFields[$listName]) ? $docFields[$listName] : '';
 
 		// support for multi checkbox, radio and select - Djamoer
 		if(is_array($value)) $value=implode(', ', $value);
@@ -750,6 +754,9 @@ function AttachFilesToMailer(&$mail,&$attachFiles) {
 function  eFormParseTemplate($tpl, $isDebug=false ){
 	global $modx,$formats,$optionsName,$_lang,$debugText,$fields,$validFormId;
 	global $efPostBack;
+	
+	// define some variables used as array index
+	$_dfnMaxlength = 6;
 
 	$formats = array();  //clear formats so values don't persist through multiple snippet calls
 	$labels = array();
@@ -875,8 +882,8 @@ function  eFormParseTemplate($tpl, $isDebug=false ){
                 case "textarea":
                     // add support for maxlength attribute for textarea
                     // attribute get's stripped form form //
-                    if ($tagAttributes['maxlength']) {
-                        $formats[$name][$_dfnMaxlength] == $tagAttributes['maxlength'];
+                    if (isset($tagAttributes['maxlength'])) {
+                        $formats[$name][$_dfnMaxlength] = $tagAttributes['maxlength'];
                         unset($tagAttributes['maxlength']);
                     }
                     $newTag = buildTagPlaceholder($type, $tagAttributes, $name);
@@ -892,8 +899,8 @@ function  eFormParseTemplate($tpl, $isDebug=false ){
                     $newTag = buildTagPlaceholder($type, $tagAttributes, $name);
                     $fieldType = stripTagQuotes($tagAttributes['type']);
                     //validate on maxlength...
-                    if ($fieldType == 'text' && $tagAttributes['maxlength']) {
-                        $formats[$name][$_dfnMaxlength] == $tagAttributes['maxlength'];
+                    if ($fieldType == 'text' && isset($tagAttributes['maxlength'])) {
+                        $formats[$name][$_dfnMaxlength] = $tagAttributes['maxlength'];
                     }
                     if ($formats[$name] && !$formats[$name][2]) {
                         $formats[$name][2] = ($fieldType == 'text') ? "string" : $fieldType;
@@ -934,10 +941,15 @@ function stripTagQuotes($value){
 }
 
 function buildTagPlaceholder($tag,$attributes,$name){
-	$type = stripTagQuotes($attributes["type"]);
-	$quotedValue = $attributes['value'];
-	$val = stripTagQuotes($quotedValue);
+    $type = (isset($attributes["type"])) ? stripTagQuotes($attributes["type"]) : "";
+    $quotedValue = "";
+    $val = "";
+    if (isset($attributes['value'])) {
+        $quotedValue = $attributes['value'];
+        $val = stripTagQuotes($quotedValue);
+    }
 
+    $t = "";
 	foreach ($attributes as $k => $v)
 			$t .= ($k!='value' && $k!='checked' && $k!='selected')?" $k=$v":"";
 
@@ -988,9 +1000,12 @@ function buildTagPlaceholder($tag,$attributes,$name){
 function attr2array($tag){
 	$expr = "#([a-z0-9_-]*?)=(([\"'])[^\\3]*?\\3)#si";
 	preg_match_all($expr,$tag,$matches);
-	foreach($matches[1] as $i => $key)
-		$rt[$key]= $matches[2][$i];
-	return $rt;
+	foreach($matches[1] as $i => $key) {
+        $rt[$key] = $matches[2][$i];
+    }
+    if (isset($rt)) {
+        return $rt;
+    }
 }
 
 function validateField($value,$fld,&$vMsg,$isDebug=false){
