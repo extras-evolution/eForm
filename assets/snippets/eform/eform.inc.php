@@ -711,7 +711,9 @@ function formMerge($docText, $docFields) {
     $docText = $modx->mergeChunkContent($docText);
     if(strpos($docText,'[!')!==false) $docText = str_replace(array('[!','!]'),array('[[',']]'),$docText);
     $docText = $modx->evalSnippets($docText);
-	$lastitems[count($lastitems)] = "class=\"\""; //removal off empty class attributes
+	if (is_array($lastitems)) {
+		$lastitems[count($lastitems)] = "class=\"\""; //removal off empty class attributes
+	}
 	$docText = str_replace($lastitems,"",$docText);
 	return $docText;
 }
@@ -730,22 +732,24 @@ function AddAddressToMailer(&$mail,$type,$addr){
 
 // Attach Files to Mailer
 function AttachFilesToMailer(&$mail,&$attachFiles) {
-	if(count($attachFiles)>0){
-		foreach($attachFiles as $attachFile){
-			if(!is_file($attachFile)) continue;
-			$FileName = $attachFile;
-			$contentType = "application/octetstream";
-			if (is_uploaded_file($attachFile)){
-				foreach($_FILES as $n => $v){
-					if($_FILES[$n]['tmp_name']==$attachFile) {
-						$FileName = $_FILES[$n]['name'];
-						$contentType = $_FILES[$n]['type'];
+	if (is_array($attachFiles)) {
+		if(count($attachFiles)>0){
+			foreach($attachFiles as $attachFile){
+				if(!is_file($attachFile)) continue;
+				$FileName = $attachFile;
+				$contentType = "application/octetstream";
+				if (is_uploaded_file($attachFile)){
+					foreach($_FILES as $n => $v){
+						if($_FILES[$n]['tmp_name']==$attachFile) {
+							$FileName = $_FILES[$n]['name'];
+							$contentType = $_FILES[$n]['type'];
+						}
 					}
 				}
+				$patharray = explode(((strpos($FileName,"/")===false)? "\\":"/"), $FileName);
+				$FileName = $patharray[count($patharray)-1];
+				$mail->AddAttachment($attachFile,$FileName,"base64",$contentType);
 			}
-			$patharray = explode(((strpos($FileName,"/")===false)? "\\":"/"), $FileName);
-			$FileName = $patharray[count($patharray)-1];
-			$mail->AddAttachment($attachFile,$FileName,"base64",$contentType);
 		}
 	}
 }
