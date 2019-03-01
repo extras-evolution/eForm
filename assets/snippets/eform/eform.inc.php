@@ -251,7 +251,7 @@ function eForm($modx,$params) {
 								$rClass[$name]=$requiredClass;
 							}elseif ($_FILES[$name]['tmp_name']){
 								if( substr($fld[5],0,5)!="#LIST" || validateField($_FILES[$name]['name'],$fld,$vMsg,$isDebug) )
-									$attachments[count($attachments)] = $_FILES[$name]['tmp_name'];
+									$attachments[count((array)$attachments)] = $_FILES[$name]['tmp_name'];
 								else $rClass[$name]=$invalidClass;
 							}
 							break;
@@ -456,7 +456,7 @@ function eForm($modx,$params) {
 				$filenames = explode(',', $fields[$attachmentField]);
 				foreach ($filenames as $filename) {
 					if (is_file($attachmentPath . $filename)) {
-						$attachments[count($attachments)] = $attachmentPath . $filename;
+						$attachments[count((array)$attachments)] = $attachmentPath . $filename;
 					}
 				}
 			}
