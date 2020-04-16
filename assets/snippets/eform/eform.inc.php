@@ -192,8 +192,7 @@ function eForm($modx,$params) {
 		foreach($fields as $name => $value) {
             if(isset($formats[$name])){
                 $fld = $formats[$name];
-            }
-            if (isset($fld)) {
+
                 $desc		= $fld[1];
 				$datatype 	= $fld[2];
 				$isRequired = $fld[3];
