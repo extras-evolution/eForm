@@ -734,6 +734,26 @@ function AttachFilesToMailer(&$mail,&$attachFiles) {
 	if (is_array($attachFiles)) {
 		if(count($attachFiles)>0){
 			foreach($attachFiles as $attachFile){
+                if (is_array($attachFile)) {
+                    foreach($attachFile as $index => $aFile){
+                        if(!is_file($aFile)) continue;
+                        $FileName = $aFile;
+                        $contentType = "application/octetstream";
+                        if (is_uploaded_file($aFile)){
+                            foreach($_FILES as $n => $v){
+                                if($_FILES[$n]['tmp_name'][$index]==$aFile) {
+                                    $FileName = $_FILES[$n]['name'][$index];
+							        $contentType = $_FILES[$n]['type'][$index];
+                                }
+                            }
+                        }
+                        $patharray = explode(((strpos($FileName,"/")===false)? "\\":"/"), $FileName);
+				        $FileName = $patharray[count($patharray)-1];
+                        
+				        $mail->AddAttachment($aFile,$FileName,"base64",$contentType);
+                    }
+                } else {
+                
 				if(!is_file($attachFile)) continue;
 				$FileName = $attachFile;
 				$contentType = "application/octetstream";
@@ -748,6 +768,8 @@ function AttachFilesToMailer(&$mail,&$attachFiles) {
 				$patharray = explode(((strpos($FileName,"/")===false)? "\\":"/"), $FileName);
 				$FileName = $patharray[count($patharray)-1];
 				$mail->AddAttachment($attachFile,$FileName,"base64",$contentType);
+                    
+                }
 			}
 		}
 	}
